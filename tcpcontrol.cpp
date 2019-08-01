@@ -68,6 +68,13 @@ void TcpControl::socketReady() {
         qDebug() << "SERVER SEND GAZ" << sendData2 ;
         socket->flush();
 
+        int bs = 100;
+        int bc1 = 100;
+        int bc2 = 100;
+        QString sendData3 = "BAT=bs:" + QString::number(bs) +",bc:" + QString::number(bc1) +",bc:" + QString::number(bc2)+";";
+        socket->write(sendData3.toUtf8());
+        qDebug() << "SERVER SEND BAT" << sendData3;
+        socket->flush();
     }
 }
 
