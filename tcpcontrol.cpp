@@ -24,9 +24,50 @@ void TcpControl::socketReady() {
         //QByteArray *data = new QByteArray();
         //*data = tcpSocket->readAll();
         QByteArray data = socket->readAll();
-
         qDebug() << data;
         socket->flush();
+        QString commandClient = data;
+        commandClient = commandClient.split(";").at(0);
+
+        //QRegExp re("((\\d{1,3}\\.\\d{1,3})|(\\d{1,3}))");
+        //re.indexIn(commandClient);
+        //QStringList listXYZ = re.capturedTexts();
+        //qDebug() << "STRING" << listXYZ.join(",") << listXYZ.length();
+        //if (listXYZ.length() >= 3) {
+//        float x = listXYZ.at(0).isNull()? listXYZ.at(0).toFloat() : 0;
+//        float y = listXYZ.at(1).isNull()? listXYZ.at(0).toFloat() : 0;
+//        float z = listXYZ.at(2).isNull()? listXYZ.at(0).toFloat() : 0;
+
+        int pos = 0;
+        QRegExp rx("((\\d{1,3}\\.\\d{1,3})|(\\d{1,3}))");
+        QStringList line;
+        while ((pos = rx.indexIn(commandClient, pos)) != -1) {
+            line.append(rx.cap(1));
+            pos += rx.matchedLength();
+        }
+        //qDebug() << line;
+        float x = !line.at(0).isNull()? line.at(0).toFloat() : 0;
+        float y = !line.at(1).isNull()? line.at(0).toFloat() : 0;
+        float z = !line.at(2).isNull()? line.at(0).toFloat() : 0;
+        x = x > 0 ? static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/x)) : 0;
+        y = y > 0 ? static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/y)) : 0;
+        z = z > 0 ? static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/z)) : 0;
+        QString sendData = "POS=x" + QString::number(x) +",y:" + QString::number(y) +",z:" + QString::number(z) +";";
+        qDebug() << "SERVER SEND POS" << sendData ;
+        socket->write(sendData.toUtf8());
+        socket->flush();
+
+
+
+        int g1 = 1+ rand() % 100;
+        int g2 = 1+ rand() % 100;
+        int g3 = 1+ rand() % 100;
+        int g4 = 1+ rand() % 100;
+        QString sendData2 = "GAZ=g:" + QString::number(g1) +",g:" + QString::number(g2) +",g:" + QString::number(g3) +",g:" + QString::number(g4)+";";
+        socket->write(sendData2.toUtf8());
+        qDebug() << "SERVER SEND GAZ" << sendData2 ;
+        socket->flush();
+
     }
 }
 
